@@ -1,0 +1,20 @@
+{
+  "name": "ZoomInClinic",
+  "jsEngine": "hermes",
+  "android": {
+    "package": "com.anonymous.zoominclinic",
+    "jsEngine": "hermes",
+    "newArchEnabled": true
+  },
+  "ios": {
+    "jsEngine": "hermes",
+    "newArchEnabled": true
+  },
+  "slug": "ZoomInClinic",
+  "plugins": [
+    "expo-asset"
+  ],
+  "assetBundlePatterns": [
+    "**/*"  // Bundle all assets (images, fonts, etc.)
+  ]
+}

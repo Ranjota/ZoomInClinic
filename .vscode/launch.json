@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "expo",
+      "request": "attach",
+      "name": "Debug Expo app",
+      "projectRoot": "${workspaceFolder}",
+      "bundlerPort": "8081",
+      "bundlerHost": "10.0.0.73",
+      "restart": true,
+      "enableTurboSourcemaps": true
+    },
+    {
+      "type": "expo",
+      "request": "attach",
+      "name": "Debug Expo app for tunnel",
+      "projectRoot": "${workspaceFolder}",
+      "bundlerPort": "8081",
+      "bundlerHost": "hyujx44-anonymous-8081.exp.direct",
+      "restart": true,
+      "enableTurboSourcemaps": true
+    }
+    //   {
+    //     "name": "Attach to Metro",
+    //     "type": "reactnative",
+    //     "request": "attach",
+    //     "cwd": "${workspaceFolder}",
+    //     "port": 8081,
+    //     "sourceMaps": true,
+    //     "address": "10.0.0.73",
+    //     "skipFiles": [
+    //       "<node_internals>/**",
+    //       "node_modules/**",
+    //       "**/lib/**",
+    //       "**/internal/**",
+    //       "**/cmap/**"
+    //     ]
+    //   }
+    // ]
+  ]
+}
