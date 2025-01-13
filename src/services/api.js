@@ -147,7 +147,7 @@ export const fetchDoctorsList = async(query='', page = 1, filters, limit=10) => 
 export const getAvailableDoctor = async() => {
     try {
         const token = await getToken();
-        const response = await axios.get(`https://zoominclinic-backend.onrender.com/api/sessions/assign-doctor-by-patient`, {
+        const response = await axios.get(`${API_URL}/api/sessions/assign-doctor-by-patient`, {
             headers: {
                 Authorization:token
             }
@@ -155,7 +155,17 @@ export const getAvailableDoctor = async() => {
 
         return response.data;
     } catch(error) {
-        console.error('Error getting available doctor details', error);
+        if (error.response) {
+            // If there's a response with a non-2xx status code
+            if (error.response.status === 409) {
+                Alert.alert(error.response.data.message); // Display the message
+                // You can show the message in the UI or alert
+            } else {
+                console.log('Other error:', error.response.data.message);
+            }
+        } else {
+            console.log('Error with the request:', error.message);
+        }
     }
 }
 
@@ -193,5 +203,35 @@ export const subscribeToWaitingRoomUpdates = async (onMessage) => {
     } catch(error) {
         console.error('Error subscribing to waiting room updates:', error);
         throw error;
+    }
+};
+
+export const onAccept = async () => {
+    try {
+        const token = await getToken();
+        const response = await axios.post(`${API_URL}/api/sessions/accept-session`, {}, {
+            headers: {
+                Authorization: token
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error starting session:', error.response.data.message);
+        Alert.alert('Error', 'There was an issue starting the session. Please try again.');
+    }
+};
+
+export const generateVideoToken = async() => {
+    try {
+        const token = await getToken(); 
+        const response = await axios.post(`${API_URL}/api/sessions/video-token`, {}, {
+            headers: {
+                Authorization: token // Include the Authorization header
+            }
+        });
+        return response.data.token; // Return the video token from the backend
+    } catch (error) {
+        console.error('Error getting video token:', error.response.data.message);
+        throw new Error('Unable to get video token');
     }
 };

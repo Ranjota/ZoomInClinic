@@ -8,7 +8,7 @@ import CheckInScreen from './src/screens/CheckInScreen';
 import WaitingRoomScreen from './src/screens/WaitingRoomScreen';
 import DoctorReadyScreen from './src/screens/DoctorReadyScreen';
 // import WaitingRoomScreen from './src/screens/WaitingRoomScreen';
-// import VideoCallScreen from './src/screens/VideoCallScreen';
+import VideoCallScreen from './src/screens/VideoCallScreen';
 // import {View, Text, Button} from 'react-native';
 import {View, Text, Button} from 'react-native';
 import { enableScreens } from 'react-native-screens';
@@ -28,7 +28,7 @@ export default function MainComponent() {
                 <Stack.Screen name='DoctorListScreen' component={DoctorListScreen}/>
                 <Stack.Screen name='WaitingRoomScreen' component={WaitingRoomScreen}/>
                 <Stack.Screen name='DoctorReadyScreen' component={DoctorReadyScreen} />
-                {/* <Stack.Screen name='VideoCall' component={VideoCallScreen}/>   */}
+                <Stack.Screen name='VideoCallScreen' component={VideoCallScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
     );
