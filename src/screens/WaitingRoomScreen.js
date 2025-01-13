@@ -132,11 +132,9 @@ export default function WaitingRoomScreen({ navigation, route }) {
     };
 
     const handleSeeDoctorNow = async () => {
-        const storedPatient = await AsyncStorage.getItem('patient');
-        const patientId = JSON.parse(storedPatient).id;
-        const doctor = await getAvailableDoctor(patientId);
+        const doctor = await getAvailableDoctor();
         navigation.navigate('DoctorReadyScreen', {
-            doctor: doctor
+            data: doctor
         });
         // setLoading(true);
 

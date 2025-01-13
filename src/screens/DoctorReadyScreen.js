@@ -1,45 +1,55 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, Button} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, Button, Alert } from 'react-native';
+import { onAccept } from '../services/api';
 import styled from 'styled-components/native';
 
-export default function DoctorReadyScreen({navigation, doctor}) {
+export default function DoctorReadyScreen({ navigation, route }) {
     const [timer, setTimer] = useState(48);
-    const [timerActive, setTimerActive] = useState(false);
-    const [doctorDetails, setDoctorDetails] = useState(doctor);
+    // const [timerActive, setTimerActive] = useState(false);
+    const doctorDetails = useRef(route?.params?.data?.doctor);
 
     useEffect(() => {
         let timerInterval;
 
         // const fetchDoctorDetail 
 
-        if(timerActive) {
             timerInterval = setInterval(() => {
                 setTimer((prev) => {
-                    if(prev <= 1) {
+                    if (prev <= 1) {
                         clearInterval(timerInterval);
                         return 0;
                     }
 
-                    return prev-1;
+                    return prev - 1;
                 });
             }, 1000);
-        }
+        
 
         return () => clearInterval(timerInterval);
-    }, [timerActive]);
+    }, []);
 
-    const handleAccept = () => {
-        onAccept();
-        setTimerActive(false);
-    }
+    const handleAccept = async () => {
+        try {
+            const response = await onAccept();
+
+            if (response) {
+                Alert.alert('Session Started', 'You are now in consultation with the doctor!');
+                // Navigate to the consultation screen or update UI
+                navigation.navigate('VideoCallScreen'); // Assuming the next screen is 'ConsultationScreen'
+            }
+        } catch (error) {
+            console.error('Error starting session:', error.response.data.message);
+            Alert.alert('Error', 'There was an issue starting the session. Please try again.');
+        }
+    };
 
     const handleWait = () => {
-        onWait();
+        // onWait();
     }
 
     return (
         <Container>
-             <Header>
+            <Header>
                 <BackButton onPress={() => navigation.goBack()}>
                     <BackText>&larr;</BackText>
                 </BackButton>
@@ -47,23 +57,41 @@ export default function DoctorReadyScreen({navigation, doctor}) {
             </Header>
 
             <DoctorInfoContainer>
-                <DoctorImage source={require('../assets/CheckInLogo.png')}/>
-                <DoctorName>Doctor Name</DoctorName>
-                <DoctorSpecialty>Doctor Specialty</DoctorSpecialty>
+                <DoctorImage source={{ uri: doctorDetails?.current.photoUrl }} />
+                <DoctorName>{doctorDetails?.current.name}</DoctorName>
+                <DoctorSpecialty>{doctorDetails?.current.specialty}</DoctorSpecialty>
                 <DoctorDetails>
-                    <DetailItem>
-                        <Text>1000+ patients</Text>
-                    </DetailItem>
-                    <DetailItem>
-                        <Text>Doctor experience</Text>
-                    </DetailItem>
-                    <DetailItem>
-                        <Text>Doctor rating</Text>
-                    </DetailItem>
+                    <Ribbon>
+                        <RibbonIcon source={require('../assets/PatientNumberLogo.png')} />
+                        <RibbonText>1000+</RibbonText>
+                        <RibbonCaption>Patients</RibbonCaption>
+                    </Ribbon>
+                    <Ribbon>
+                        <RibbonIcon source={require('../assets/DoctorExperienceLogo.png')} />
+                        <RibbonText>{doctorDetails?.current.experience} Yrs</RibbonText>
+                        <RibbonCaption>Experience</RibbonCaption>
+                    </Ribbon>
+                    <Ribbon>
+                        <RibbonIcon source={require('../assets/DoctorRatingLogo.png')} />
+                        <RibbonText>{doctorDetails?.current.rating}</RibbonText>
+                        <RibbonCaption>Rating</RibbonCaption>
+                    </Ribbon>
                 </DoctorDetails>
-
-                <DoctorBio>Doctor bio</DoctorBio>
+                <DoctorBioContainer>
+                    <DoctorBioTitle>About this doctor</DoctorBioTitle>
+                    <DoctorBio>{doctorDetails.current.bio}</DoctorBio>
+                </DoctorBioContainer>
             </DoctorInfoContainer>
+
+            <ActionButtonsContainer>
+                <WaitButton onPress={handleWait}>
+                    <WaitButtonText>Wait for another doctor</WaitButtonText>
+                </WaitButton>
+
+                <AcceptButton onPress={handleAccept} disabled={timer === 0}>
+                    <AcceptButtonText>Accept ({timer}s)</AcceptButtonText>
+                </AcceptButton>
+            </ActionButtonsContainer>
         </Container>
     )
 };
@@ -71,7 +99,7 @@ export default function DoctorReadyScreen({navigation, doctor}) {
 const Container = styled.View`
     flex: 1;
     padding: 20px;
-    background-color: #fff;
+    background-color:#F8F8F8;
 `;
 
 const Header = styled.View`
@@ -112,14 +140,14 @@ const Title = styled.Text`
 
 const DoctorInfoContainer = styled.View`
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 8px;
     border-radius:50%;
     border-color: silver;
 `;
 
 const DoctorImage = styled.Image`
-    width: 150px;
-    height: 150px;
+    width: 120px;
+    height: 120px;
     border-radius: 75px;
     margin-bottom: 15px;
 `;
@@ -137,18 +165,63 @@ const DoctorSpecialty = styled.Text`
 `;
 
 const DoctorDetails = styled.View`
-    flex-direction: row;
+    flex-direction:row;
+    flex-grow:1;
     margin-bottom: 15px;
 `;
 
-const DetailItem = styled.View`
-    margin-right: 15px;
+const Ribbon = styled.View`
+    background-color: white;
+    padding: 0px;
+    margin-right: 5px;
+    border-radius: 10px;
+    flex-grow: 1;
+    align-items: center;
+    flex-direction: column;
+    min-height:90px;
+    height: auto;
+    width:100px;
+`;
+
+const RibbonIcon = styled.Image`
+    width: 55px;
+    height: 58px;
+    margin-bottom:5px;
+`;
+
+const RibbonText = styled.Text`
+    font-size: 15px;
+    color: #263138;
+    font-weight: bold;
+    align-items: center;
+`;
+
+const RibbonCaption = styled.Text`
+    font-size: 14px;
+    color: #6A769A;
+    font-weight: bold;
+    align-items: center;
+    margin-bottom:5px;
+`;
+
+const DoctorBioContainer = styled.View`
+    padding: 2px;
+    align-items:left;
+    margin:5px 0px 5px 0px;
+`;
+
+const DoctorBioTitle = styled.Text`
+    color:black;
+    font-size: 19px;
+    font-weight: bold;
+    text-align: left;
+    margin-bottom:3px;
 `;
 
 const DoctorBio = styled.Text`
-    font-size: 14px;
-    color: #777;
-    text-align: center;
+    font-size: 16px;
+    color: #737EA0;
+    text-align: left;
 `;
 
 const CountdownText = styled.Text`
@@ -159,11 +232,20 @@ const CountdownText = styled.Text`
 `;
 
 const ActionButtonsContainer = styled.View`
-    margin-top: 30px;
+    margin-top:5px;
     align-items: center;
 `;
 
-const ActionButton = styled.TouchableOpacity`
+const WaitButton = styled.TouchableOpacity`
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    width: 100%;
+    align-items: center;
+`;
+
+const AcceptButton = styled.TouchableOpacity`
     background-color: #263138;
     padding: 15px;
     border-radius: 10px;
@@ -172,7 +254,13 @@ const ActionButton = styled.TouchableOpacity`
     align-items: center;
 `;
 
-const ActionButtonText = styled.Text`
+const WaitButtonText = styled.Text`
+    font-size: 16px;
+    color: black;
+    font-weight: bold;
+`;
+
+const AcceptButtonText = styled.Text`
     font-size: 16px;
     color: white;
     font-weight: bold;
